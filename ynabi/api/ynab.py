@@ -38,18 +38,34 @@ def create_transactions(transactions, chunk_size=100, dryrun=False):
     ]
 
     print(f"ynab: creating {len(transactions)} transactions in {len(chunks)} chunks")
+
+    n_total_duplicates = 0
+
     for i, chunk in enumerate(chunks):
         body = {"transactions": [t.to_dict() for t in chunk]}
+
         if dryrun:
             print(f"ynab dryrun: would post transaction chunk {i}/{len(chunks)}..")
             time.sleep(0.5)
         else:
-            print(f"ynab: posting transaction chunk {i}/{len(chunks)}..")
+            print(f"ynab: posting transaction chunk {i}/{len(chunks)}.. ", end="")
             resp = requests.post(url, json=body, headers=headers)
+
             if not 200 <= resp.status_code < 300:
-                print(f"ynab: warning, bulk create request failed ({resp.status_code})")
+                print(f"\nynab error: bulk create request failed ({resp.status_code})")
                 print("request: ", resp.request.body)
                 print("response: ", resp.json())
+                return
+
+            n_duplicates = len(resp.json()["data"]["bulk"]["duplicate_import_ids"])
+            if n_duplicates > 0:
+                print(f"({n_duplicates} duplicates ignored)")
+                n_total_duplicates += n_duplicates
+
+    print(
+        f"ynab: created {len(transactions) - n_total_duplicates} transactions, "
+        + f"{n_total_duplicates} duplicates ignored"
+    )
 
     print("ynab: done")
 

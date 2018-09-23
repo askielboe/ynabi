@@ -3,7 +3,7 @@ from ynabi.model.transaction import Transaction
 
 after = "2018-01-01T00:00:00Z"
 id_postfix = "1"  # initial import
-dryrun = True
+dryrun = False
 
 print("============== ynabi v1.0 - start ==============")
 
@@ -28,4 +28,4 @@ ynab.create_transactions(transactions, dryrun=dryrun)
 #      DM Mastercard:  0
 #      Fælleskonto:    0
 
-print("============== ynabi v1.0 - done ==============")
+print("============== ynabi v1.0 - end ==============")
