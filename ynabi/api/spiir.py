@@ -45,7 +45,7 @@ def _get_transactions(filename=None):
 
     if filename is not None:
         print(f"spiir: save transactions to {filename}")
-        with open(filename, "w") as outfile:
+        with open(filename, "w", encoding="utf-8") as outfile:
             json.dump(resp.json(), outfile, ensure_ascii=False)
 
     return resp.json()
@@ -57,7 +57,7 @@ def _load_transactions(filename):
     """
     print(f"spiir: load transactions from {filename}")
 
-    with open(filename) as f:
+    with open(filename, encoding="utf-8") as f:
         data = f.readline()
 
     return json.loads(data)
