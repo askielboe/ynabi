@@ -1,3 +1,9 @@
+### Getting started:
+
+1. Edit ynabi/api/credentials.py
+2. Edit ynabi/config.py
+3. Run run.py
+
 ### TODO:
 
 - [x] Create Spiir categories in YNAB

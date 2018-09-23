@@ -4,6 +4,7 @@ import datetime
 
 from selenium import webdriver
 
+from ynabi.config import download_path
 from ynabi.model.transaction import Transaction
 
 from .credentials import spiir_username, spiir_password
@@ -20,7 +21,7 @@ before_time = _to_datetime("1000-01-01T00:00:00Z")  # year 1000
 
 def _filename_today():
     now = datetime.datetime.now()
-    filename = "/Users/askielboe/Downloads/alle-poster-{}-{}-{}.json".format(
+    filename = download_path + "/alle-poster-{}-{}-{}.json".format(
         str(now.year), str(now.month).zfill(2), str(now.day).zfill(2)
     )
     return filename
