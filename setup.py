@@ -27,6 +27,6 @@ setup(
         "Topic :: Utilities",
         "License :: All Rights Reserved",
     ],
-    install_requires=["requests", "selenium"],
+    install_requires=["requests", "tqdm"],
     include_package_data=True,
 )

@@ -1,22 +1,23 @@
 import json
 import glob
+import shutil
 import datetime
 
-from selenium import webdriver
+import requests
 
 from ynabi.config import download_path
 from ynabi.model.transaction import Transaction
+from ynabi.utils import string_to_datetime
 
 from .credentials import spiir_username, spiir_password
 
-
-def _to_datetime(date_string):
-    return datetime.datetime.strptime(date_string, spiir_datetime_format)
-
-
 spiir_datetime_format = "%Y-%m-%dT%H:%M:%SZ"
 after_time = datetime.datetime.now() + datetime.timedelta(days=1)  # tomorrow
-before_time = _to_datetime("1000-01-01T00:00:00Z")  # year 1000
+before_time = string_to_datetime("1000-01-01T00:00:00Z", spiir_datetime_format)
+
+
+def _to_datetime(date_string):
+    return string_to_datetime(date_string, spiir_datetime_format)
 
 
 def _filename_today():
@@ -27,53 +28,46 @@ def _filename_today():
     return filename
 
 
-def _json_from_file(filename):
+def _get_transactions(filename=None):
+    """
+    Downloads raw spiir transactions and optionally saves to filename.
+    """
+    url_login = "https://mine.spiir.dk/log-ind"
+    url_download = "https://mine.spiir.dk/Profile/ExportAllPostingsToJson"
+
+    payload = {"Email": spiir_username, "Password": spiir_password}
+
+    with requests.Session() as s:
+        s.post(url_login, data=payload)
+        resp = s.get(url_download)
+
+    if filename is not None:
+        with open(filename, "w") as outfile:
+            json.dump(resp.json(), outfile)
+
+    return resp.json()
+
+
+def _load_transactions(filename):
+    """
+    Loads raw spiir transactions form filename.
+    """
     with open(filename) as f:
         data = f.readline()
 
     return json.loads(data)
 
 
-def _download_transactions():
-    # from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
-    # Download transactions
-    driver = webdriver.Chrome()  # Using local chromedriver for testing
-
-    # driver = webdriver.Remote(
-    #     command_executor="http://selenium:4444/wd/hub",
-    #     desired_capabilities=DesiredCapabilities.CHROME,
-    # )
-
-    # driver.implicitly_wait(10)  # seconds
-
-    driver.get("https://mine.spiir.dk/log-ind")
-
-    elem_username = driver.find_element_by_name("Email")
-    elem_username.send_keys(spiir_username)
-
-    elem_password = driver.find_element_by_name("Password")
-    elem_password.send_keys(spiir_password)
-
-    elem_button = driver.find_element_by_class_name("btn")
-    elem_button.click()
-
-    driver.get("https://mine.spiir.dk/Profile/ExportAllPostingsToJson")
-
-    driver.close()
-
-
-def get_raw_transactions():
+def _cached_transactions():
     """
-    If transactions have already been downloaded for today, return those.
-    Otherwise download transactions from Spiir using selenium.
+    Returns raw spiir transactions. Uses file cache if file was updated today.
     """
-    if len(glob.glob(_filename_today())) == 0:
-        _download_transactions()
-    return _json_from_file(_filename_today())
+    if len(glob.glob(_filename_today())) > 0:
+        return _load_transactions(_filename_today())
+    return _get_transactions(filename=_filename_today())
 
 
-def get_transactions(before=after_time, after=before_time, id_postfix=""):
+def transactions(before=after_time, after=before_time, id_postfix=""):
     """
     Returns list of Transation objects from raw transactions.
     Before and after time formatted as "2018-01-01T00:00:00Z".
@@ -86,20 +80,20 @@ def get_transactions(before=after_time, after=before_time, id_postfix=""):
 
     return [
         Transaction.from_spiir_dict(spiir_dict, id_postfix)
-        for spiir_dict in get_raw_transactions()
+        for spiir_dict in _cached_transactions()
         if after < _to_datetime(spiir_dict["Date"]) <= before
     ]
 
 
-def list_all_accounts():
+def accounts():
     accounts = []
-    for transaction in get_transactions():
+    for transaction in _cached_transactions():
         accounts.append(transaction["AccountName"])
     return list(set(accounts))
 
 
-def list_all_categories():
+def categories():
     categories = []
-    for transaction in get_transactions():
+    for transaction in _cached_transactions():
         categories.append(transaction["CategoryName"])
     return list(set(categories))
