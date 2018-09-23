@@ -5,6 +5,8 @@ after = "2018-01-01T00:00:00Z"
 id_postfix = "1"  # initial import
 dryrun = True
 
+print("============== ynabi v1.0 - start ==============")
+
 print("ynabi: importing spiir transactions to ynab")
 print(f"ynabi: including transaction after {after}")
 print(f"ynabi: using transaction id postfix {id_postfix}")
@@ -25,3 +27,5 @@ ynab.create_transactions(transactions, dryrun=dryrun)
 #      LSBPrivat Løn:  19976.85 + 3490.65 = 23467,50
 #      DM Mastercard:  0
 #      Fælleskonto:    0
+
+print("============== ynabi v1.0 - done ==============")
