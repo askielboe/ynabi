@@ -73,3 +73,18 @@ class Transaction:
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+    def __repr__(self):
+        return f"""Transaction(
+    "account_id": {self.account_id},
+    "date": {self.date},
+    "amount": {self.amount},
+    "payee_id": {self.payee_id},
+    "payee_name": {self.payee_name},
+    "category_id": {self.category_id},
+    "memo": {self.memo},
+    "cleared": {self.cleared},
+    "approved": {self.approved},
+    "flag_color": {self.flag_color},
+    "import_id": {self.import_id},
+)"""
