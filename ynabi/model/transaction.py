@@ -22,7 +22,7 @@ class Transaction:
         self.date = date  # string
         self.amount = amount  # 0
         self.payee_id = payee_id  # string
-        self.payee_name = payee_name  # string
+        self.payee_name = payee_name  # string, len <= 50
         self.category_id = category_id  # string
         self.memo = memo  # string
         self.cleared = cleared  # cleared | uncleared | reconciled
@@ -36,17 +36,18 @@ class Transaction:
 
         if spiir_dict["CategoryName"] is not None and ynab_category_id == None:
             print(
-                "WARNING: Category {} not found in YNAB".format(
+                "fatal: category {} not found in ynab".format(
                     spiir_dict["CategoryName"]
                 )
             )
+            return
 
         return cls(
             account_id=ynab.get_account_id(spiir_dict["AccountName"]),
             date=spiir_dict["Date"],
             amount=int(spiir_dict["Amount"] * 100.),
             payee_id=None,
-            payee_name=spiir_dict["Description"],
+            payee_name=spiir_dict["Description"][:50],
             category_id=ynab.get_category_id(spiir_dict["CategoryName"]),
             memo=None,
             cleared="cleared",

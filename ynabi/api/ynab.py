@@ -24,20 +24,30 @@ def get_category_groups():
 
 
 def create_transactions(transactions):
+    """
+    Uploads transactions to YNAB. No return value.
+    """
     url = api + f"/budgets/{ynab_budget_id}/transactions/bulk"
+
+    if len(transactions) == 0:
+        print("no transactions to upload")
+        return
 
     chunks = [
         transactions[x : x + bulk_transaction_chunk_size]
         for x in range(0, len(transactions), bulk_transaction_chunk_size)
     ]
 
-    print(f"Creating {len(transactions)} transactions in {len(chunks)} chunks")
+    print(f"creating {len(transactions)} transactions in {len(chunks)} chunks")
     for chunk in tqdm.tqdm(chunks, "Bulk create transactions"):
         body = {"transactions": [t.to_dict() for t in chunk]}
         resp = requests.post(url, json=body, headers=headers)
-        print(resp.status_code)
+        if not 200 <= resp.status_code < 300:
+            print(f"warning: bulk create request failed ({resp.status_code})")
+            print("request: ", resp.request.body)
+            print("response: ", resp.json())
 
-    return resp
+    print("done")
 
 
 #

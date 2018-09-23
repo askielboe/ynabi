@@ -9,6 +9,15 @@ from ynabi.model.transaction import Transaction
 from .credentials import spiir_username, spiir_password
 
 
+def _to_datetime(date_string):
+    return datetime.datetime.strptime(date_string, spiir_datetime_format)
+
+
+spiir_datetime_format = "%Y-%m-%dT%H:%M:%SZ"
+after_time = datetime.datetime.now() + datetime.timedelta(days=1)  # tomorrow
+before_time = _to_datetime("1000-01-01T00:00:00Z")  # year 1000
+
+
 def _filename_today():
     now = datetime.datetime.now()
     filename = "/Users/askielboe/Downloads/alle-poster-{}-{}-{}.json".format(
@@ -64,13 +73,21 @@ def get_raw_transactions():
     return _json_from_file(_filename_today())
 
 
-def get_transactions(id_postfix=""):
+def get_transactions(before=after_time, after=before_time, id_postfix=""):
     """
     Returns list of Transation objects from raw transactions.
+    Before and after time formatted as "2018-01-01T00:00:00Z".
     """
+    if isinstance(before, str):
+        before = _to_datetime(before)
+
+    if isinstance(after, str):
+        after = _to_datetime(after)
+
     return [
         Transaction.from_spiir_dict(spiir_dict, id_postfix)
         for spiir_dict in get_raw_transactions()
+        if after < _to_datetime(spiir_dict["Date"]) < before
     ]
 
 
