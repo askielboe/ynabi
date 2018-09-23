@@ -1,5 +1,5 @@
+import time
 import json
-import tqdm
 import requests
 
 from .credentials import ynab_api_token, ynab_budget_id
@@ -22,14 +22,14 @@ def get_category_groups():
     return resp.json()["data"]["category_groups"]
 
 
-def create_transactions(transactions, chunk_size=100):
+def create_transactions(transactions, chunk_size=100, dryrun=False):
     """
     Uploads transactions to YNAB. No return value.
     """
     url = api + f"/budgets/{ynab_budget_id}/transactions/bulk"
 
     if len(transactions) == 0:
-        print("no transactions to upload")
+        print("ynab: no transactions to upload")
         return
 
     chunks = [
@@ -37,16 +37,21 @@ def create_transactions(transactions, chunk_size=100):
         for x in range(0, len(transactions), chunk_size)
     ]
 
-    print(f"creating {len(transactions)} transactions in {len(chunks)} chunks")
-    for chunk in tqdm.tqdm(chunks, "Bulk create transactions"):
+    print(f"ynab: creating {len(transactions)} transactions in {len(chunks)} chunks")
+    for i, chunk in enumerate(chunks):
         body = {"transactions": [t.to_dict() for t in chunk]}
-        resp = requests.post(url, json=body, headers=headers)
-        if not 200 <= resp.status_code < 300:
-            print(f"warning: bulk create request failed ({resp.status_code})")
-            print("request: ", resp.request.body)
-            print("response: ", resp.json())
+        if dryrun:
+            print(f"ynab dryrun: would post transaction chunk {i}/{len(chunks)}..")
+            time.sleep(0.5)
+        else:
+            print(f"ynab: posting transaction chunk {i}/{len(chunks)}..")
+            resp = requests.post(url, json=body, headers=headers)
+            if not 200 <= resp.status_code < 300:
+                print(f"ynab: warning, bulk create request failed ({resp.status_code})")
+                print("request: ", resp.request.body)
+                print("response: ", resp.json())
 
-    print("done")
+    print("ynab: done")
 
 
 #

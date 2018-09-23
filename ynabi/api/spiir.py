@@ -32,6 +32,8 @@ def _get_transactions(filename=None):
     """
     Downloads raw spiir transactions and optionally saves to filename.
     """
+    print("spiir: get transactions")
+
     url_login = "https://mine.spiir.dk/log-ind"
     url_download = "https://mine.spiir.dk/Profile/ExportAllPostingsToJson"
 
@@ -42,6 +44,7 @@ def _get_transactions(filename=None):
         resp = s.get(url_download)
 
     if filename is not None:
+        print(f"spiir: save transactions to {filename}")
         with open(filename, "w") as outfile:
             json.dump(resp.json(), outfile, ensure_ascii=False)
 
@@ -52,6 +55,8 @@ def _load_transactions(filename):
     """
     Loads raw spiir transactions form filename.
     """
+    print(f"spiir: load transactions from {filename}")
+
     with open(filename) as f:
         data = f.readline()
 

@@ -27,6 +27,6 @@ setup(
         "Topic :: Utilities",
         "License :: All Rights Reserved",
     ],
-    install_requires=["requests", "tqdm"],
+    install_requires=["requests"],
     include_package_data=True,
 )
