@@ -68,7 +68,6 @@ def get_raw_transactions():
     If transactions have already been downloaded for today, return those.
     Otherwise download transactions from Spiir using selenium.
     """
-    # TODO: Implement Spiir time filter
     if len(glob.glob(_filename_today())) == 0:
         _download_transactions()
     return _json_from_file(_filename_today())
@@ -88,7 +87,7 @@ def get_transactions(before=after_time, after=before_time, id_postfix=""):
     return [
         Transaction.from_spiir_dict(spiir_dict, id_postfix)
         for spiir_dict in get_raw_transactions()
-        if after < _to_datetime(spiir_dict["Date"]) < before
+        if after < _to_datetime(spiir_dict["Date"]) <= before
     ]
 
 
