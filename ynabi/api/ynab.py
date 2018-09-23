@@ -6,7 +6,6 @@ from .credentials import ynab_api_token, ynab_budget_id
 
 api = "https://api.youneedabudget.com/v1/"
 headers = {"Authorization": "Bearer {}".format(ynab_api_token)}
-bulk_transaction_chunk_size = 10
 
 #
 # Requests
@@ -23,7 +22,7 @@ def get_category_groups():
     return resp.json()["data"]["category_groups"]
 
 
-def create_transactions(transactions):
+def create_transactions(transactions, chunk_size=100):
     """
     Uploads transactions to YNAB. No return value.
     """
@@ -34,8 +33,8 @@ def create_transactions(transactions):
         return
 
     chunks = [
-        transactions[x : x + bulk_transaction_chunk_size]
-        for x in range(0, len(transactions), bulk_transaction_chunk_size)
+        transactions[x : x + chunk_size]
+        for x in range(0, len(transactions), chunk_size)
     ]
 
     print(f"creating {len(transactions)} transactions in {len(chunks)} chunks")
