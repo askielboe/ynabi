@@ -43,7 +43,7 @@ def _get_transactions(filename=None):
 
     if filename is not None:
         with open(filename, "w") as outfile:
-            json.dump(resp.json(), outfile)
+            json.dump(resp.json(), outfile, ensure_ascii=False)
 
     return resp.json()
 
