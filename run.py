@@ -1,7 +1,7 @@
 from ynabi.api import spiir, ynab
 from ynabi.model.transaction import Transaction
 
-after = "2018-01-01T00:00:00Z"
+after = "2018-09-20T00:00:00Z"
 id_postfix = "1"  # initial import
 dryrun = False
 
