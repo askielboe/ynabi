@@ -19,7 +19,7 @@ print(f"ynabi: using transaction id postfix {id_postfix}")
 transactions = spiir.transactions(after=after, id_postfix=id_postfix)
 
 # 2. Save transactions to YNAB
-ynab.create_transactions(transactions, dryrun=dryrun)
+ynab.create_transactions(transactions, dryrun=dryrun, pushover=True)
 
 # 3. Convert "Løn" category to "To be budgeted"
 

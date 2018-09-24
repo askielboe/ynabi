@@ -2,6 +2,8 @@ import time
 import json
 import requests
 
+from ynabi.api.logger import log
+
 from .credentials import ynab_api_token, ynab_budget_id
 
 api = "https://api.youneedabudget.com/v1/"
@@ -22,15 +24,15 @@ def get_category_groups():
     return resp.json()["data"]["category_groups"]
 
 
-def create_transactions(transactions, chunk_size=100, dryrun=False):
+def create_transactions(transactions, chunk_size=100, dryrun=False, pushover=False):
     """
     Uploads transactions to YNAB. No return value.
     """
     url = api + f"/budgets/{ynab_budget_id}/transactions/bulk"
 
     if len(transactions) == 0:
-        print("ynab: no transactions to upload")
-        return
+        log("ynab", "no transactions to upload", pushover=pushover)
+        return 0, 0
 
     chunks = [
         transactions[x : x + chunk_size]
@@ -39,7 +41,7 @@ def create_transactions(transactions, chunk_size=100, dryrun=False):
 
     print(f"ynab: creating {len(transactions)} transactions in {len(chunks)} chunks")
 
-    n_total_duplicates = 0
+    n_duplicates = 0
 
     for i, chunk in enumerate(chunks):
         body = {"transactions": [t.to_dict() for t in chunk]}
@@ -48,26 +50,37 @@ def create_transactions(transactions, chunk_size=100, dryrun=False):
             print(f"ynab dryrun: would post transaction chunk {i}/{len(chunks)}..")
             time.sleep(0.5)
         else:
-            print(f"ynab: posting transaction chunk {i}/{len(chunks)}.. ", end="")
+            print(f"ynab: posting transaction chunk {i+1}/{len(chunks)}.. ", end="")
             resp = requests.post(url, json=body, headers=headers)
 
             if not 200 <= resp.status_code < 300:
-                print(f"\nynab error: bulk create request failed ({resp.status_code})")
+                print("\n")
+                log(
+                    "ynab error",
+                    f"bulk create request failed ({resp.status_code})",
+                    pushover=True,
+                )
                 print("request: ", resp.request.body)
                 print("response: ", resp.json())
-                return
 
-            n_duplicates = len(resp.json()["data"]["bulk"]["duplicate_import_ids"])
-            if n_duplicates > 0:
-                print(f"({n_duplicates} duplicates ignored)")
-                n_total_duplicates += n_duplicates
+                return 0, 0
 
-    print(
-        f"ynab: created {len(transactions) - n_total_duplicates} transactions, "
-        + f"{n_total_duplicates} duplicates ignored"
+            n = len(resp.json()["data"]["bulk"]["duplicate_import_ids"])
+            if n > 0:
+                print(f"({n} duplicates ignored)")
+                n_duplicates += n
+
+    n_created = len(transactions) - n_duplicates
+
+    log(
+        "ynab",
+        f"created {n_created} transactions, {n_duplicates} duplicates ignored",
+        pushover=pushover,
     )
 
     print("ynab: done")
+
+    return n_created, n_duplicates
 
 
 #
