@@ -1,4 +1,3 @@
-import settings as s
 from pushover import Client
 
 from .credentials import pushover_user_key, pushover_api_token
