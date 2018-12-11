@@ -17,7 +17,7 @@ setup(
     author="Andreas Skielboe",
     author_email="andreas@skielboe.com",
     description=("YNAB importer"),
-    license="All Rights Reserved",
+    license="The Unlicense",
     keywords="",
     url="https://ynab.com",
     packages=find_packages(),
