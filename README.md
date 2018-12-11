@@ -45,7 +45,12 @@ the ones you don't need.
 If a Spiir category is missing from YNAB the transaction will be uncategorized
 in YNAB after import.
 
-### Install requirements:
+#### Account names
+
+Lige categories, you need to add accounts to YNAB with the exact same names as in
+Spiir.
+
+### Install requirements
 
 1. `pip install -r requirements.txt`
 
@@ -63,8 +68,8 @@ a unique identifier which are stored in YNAB. Therefore transactions can only
 be imported to the same budget once - *even if the transaction has been deleted
 in YNAB!*
 
-Therefore, in order to re-import previously imported (possibly, but not
-neccesarily, deleted) transactions you can change the transaction ID postfix
+Therefore, in order to re-import previously imported (possibly deleted)
+transactions you can change the transaction ID postfix
 (`id_postfix`) in ynabi/config.py. This will allow you to re-import transactions
 to YNAB. But beware that this may create duplicates in YNAB.
 
