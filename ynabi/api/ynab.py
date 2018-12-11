@@ -2,7 +2,10 @@ import time
 import json
 import requests
 
-from ynabi.api.logger import log
+try:
+    from ynabi.api.pushover import log
+except ImportError:
+    log = lambda *s: None  # If pushover is not installed, don't log anything
 
 from .credentials import ynab_api_token, ynab_budget_id
 
@@ -24,14 +27,14 @@ def get_category_groups():
     return resp.json()["data"]["category_groups"]
 
 
-def create_transactions(transactions, chunk_size=100, dryrun=False, pushover=False):
+def create_transactions(transactions, chunk_size=100, dryrun=False):
     """
     Uploads transactions to YNAB. No return value.
     """
     url = api + f"/budgets/{ynab_budget_id}/transactions/bulk"
 
     if len(transactions) == 0:
-        log("ynab", "no transactions to upload", pushover=pushover)
+        log("ynab", "no transactions to upload")
         return 0, 0
 
     chunks = [
@@ -55,11 +58,7 @@ def create_transactions(transactions, chunk_size=100, dryrun=False, pushover=Fal
 
             if not 200 <= resp.status_code < 300:
                 print("\n")
-                log(
-                    "ynab error",
-                    f"bulk create request failed ({resp.status_code})",
-                    pushover=True,
-                )
+                log("ynab error", f"bulk create request failed ({resp.status_code})")
                 print("request: ", resp.request.body)
                 print("response: ", resp.json())
 
@@ -72,12 +71,7 @@ def create_transactions(transactions, chunk_size=100, dryrun=False, pushover=Fal
 
     n_created = len(transactions) - n_duplicates
 
-    log(
-        "ynab",
-        f"created {n_created} transactions, {n_duplicates} duplicates ignored",
-        pushover=pushover,
-    )
-
+    log("ynab", f"created {n_created} transactions, {n_duplicates} duplicates ignored")
     print("ynab: done")
 
     return n_created, n_duplicates
