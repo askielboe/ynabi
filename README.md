@@ -2,16 +2,20 @@
 
 Since YNAB does not support Nordic banks, I created this Python script
 to import Spiir transactions into YNAB. The script is not endorsed by Spiir
-and may stop working at any time.
+or YNAB and may stop working at any time.
 
-## Getting started:
+## Getting started
 
-### Setting up Spiir
+### Basic configuration
+
+Add your basic configuration by editing ynabi/api/config.py (see ynabi/api/config.example.py).
+
+### Configure Spiir
 
 Add your Spiir login credentials to ynabi/api/credentials.py
 (see ynabi/api/credentials.example.py).
 
-### Setting up YNAB
+### Configure YNAB
 
 Before running `ynabi` you need to get your API token and budget ID from YNAB,
 as well as set up all Spiir categories in YNAB manually.
@@ -45,11 +49,27 @@ in YNAB after import.
 
 1. `pip install -r requirements.txt`
 
-### Configure and run ynabi
+### Run ynabi
 
-1. Add ynabi/api/credentials.py (see ynabi/api/credentials.example.py)
-2. Add ynabi/config.py (see ynabi/config-example.py)
-3. Run `python ynabi.py`
+1. `python ynabi.py`
+
+## Troubleshooting
+
+### Duplicate transactions
+
+If you accidentially imported transactions to YNAB that you don't want you can
+safely delete them from YNAB. To avoid duplicates, all Spiir transactions has
+a unique identifier which are stored in YNAB. Therefore transactions can only
+be imported to the same budget once - *even if the transaction has been deleted
+in YNAB!*
+
+Therefore, in order to re-import previously imported (possibly, but not
+neccesarily, deleted) transactions you can change the transaction ID postfix
+(`id_postfix`) in ynabi/config.py. This will allow you to re-import transactions
+to YNAB. But beware that this may create duplicates in YNAB.
+
+In general, once you are set up correctly, you should never have to change the
+transaction ID postfix.
 
 #### Optional: [Pushover](https://pushover.net/) support
 
