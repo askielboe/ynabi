@@ -1,9 +1,12 @@
+import sys
+
 from ynabi.api import spiir, ynab
 from ynabi.model.transaction import Transaction
 
 from ynabi.config import start_date, id_postfix
 
 dryrun = False
+use_cache = True
 
 print("============== ynabi v1.0 - start ==============")
 
@@ -15,8 +18,13 @@ print(f"ynabi: using transaction id postfix {id_postfix}")
 # a = spiir.accounts()
 # c = spiir.categories()
 
+if len(sys.argv) > 1 and sys.argv[1] == "--no-cache":
+    use_cache = False
+
 # 1. Load data from Spiir (list of Transaction)
-transactions = spiir.transactions(after=start_date, id_postfix=id_postfix)
+transactions = spiir.transactions(
+    after=start_date, id_postfix=id_postfix, use_cache=use_cache
+)
 
 # 2. Save transactions to YNAB
 ynab.create_transactions(transactions, dryrun=dryrun)

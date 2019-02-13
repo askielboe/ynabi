@@ -63,16 +63,16 @@ def _load_transactions(filename):
     return json.loads(data)
 
 
-def _cached_transactions():
+def _cached_transactions(use_cache=False):
     """
     Returns raw spiir transactions. Uses file cache if file was updated today.
     """
-    if len(glob.glob(_filename_today())) > 0:
+    if use_cache and len(glob.glob(_filename_today())) > 0:
         return _load_transactions(_filename_today())
     return _get_transactions(filename=_filename_today())
 
 
-def transactions(before=after_time, after=before_time, id_postfix=""):
+def transactions(before=after_time, after=before_time, id_postfix="", use_cache=False):
     """
     Returns list of Transation objects from raw transactions.
     Before and after time formatted as "2018-01-01T00:00:00Z".
@@ -85,7 +85,7 @@ def transactions(before=after_time, after=before_time, id_postfix=""):
 
     return [
         Transaction.from_spiir_dict(spiir_dict, id_postfix)
-        for spiir_dict in _cached_transactions()
+        for spiir_dict in _cached_transactions(use_cache=use_cache)
         if after < _to_datetime(spiir_dict["Date"]) <= before
     ]
 
