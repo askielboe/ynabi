@@ -44,7 +44,7 @@ class Transaction:
         return cls(
             account_id=ynab.get_account_id(spiir_dict["AccountName"]),
             date=spiir_dict["Date"],
-            amount=int(spiir_dict["Amount"] * 1000.),
+            amount=int(spiir_dict["Amount"] * 1000.0),
             payee_id=None,
             payee_name=spiir_dict["Description"][:50],
             category_id=ynab_category_id,
