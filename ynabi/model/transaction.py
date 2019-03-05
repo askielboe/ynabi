@@ -36,11 +36,10 @@ class Transaction:
 
         if spiir_dict["CategoryName"] is not None and ynab_category_id == None:
             print(
-                "fatal: category {} not found in ynab".format(
+                "warning: unknown ynab category ({}), transaction will be uncategorized".format(
                     spiir_dict["CategoryName"]
                 )
             )
-            return
 
         return cls(
             account_id=ynab.get_account_id(spiir_dict["AccountName"]),
@@ -48,7 +47,7 @@ class Transaction:
             amount=int(spiir_dict["Amount"] * 1000.),
             payee_id=None,
             payee_name=spiir_dict["Description"][:50],
-            category_id=ynab.get_category_id(spiir_dict["CategoryName"]),
+            category_id=ynab_category_id,
             memo=None,
             cleared="cleared",
             approved=False,
