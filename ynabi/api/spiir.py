@@ -68,6 +68,7 @@ def _cached_transactions(use_cache=False):
     Returns raw spiir transactions. Uses file cache if file was updated today.
     """
     if use_cache and len(glob.glob(_filename_today())) > 0:
+        print(f"spiir: using cached transactions (overwrite using --no-cache)")
         return _load_transactions(_filename_today())
     return _get_transactions(filename=_filename_today())
 
