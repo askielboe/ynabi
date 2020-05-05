@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 
 from ynabi.api import spiir, ynab
@@ -5,7 +6,7 @@ from ynabi.model.transaction import Transaction
 
 from ynabi.config import start_date, id_postfix
 
-dryrun = False
+dryrun = True
 use_cache = True
 
 print("============== ynabi v1.0 - start ==============")

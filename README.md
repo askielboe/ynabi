@@ -47,22 +47,22 @@ in YNAB after import.
 
 #### Account names
 
-Lige categories, you need to add accounts to YNAB with the exact same names as in
+Like categories, you need to add accounts to YNAB with the exact same names as in
 Spiir.
 
-### Install requirements
+### Install
 
-1. `pip install -r requirements.txt`
+1. `pipenv install`
 
-### Run ynabi
+### Run
 
-1. `python ynabi.py`
+1. `pipenv run ./ynabi.py`
 
 ## Troubleshooting
 
 ### Duplicate transactions
 
-If you accidentially imported transactions to YNAB that you don't want you can
+If you accidentally imported transactions to YNAB that you don't want you can
 safely delete them from YNAB. To avoid duplicates, all Spiir transactions has
 a unique identifier which are stored in YNAB. Therefore transactions can only
 be imported to the same budget once - *even if the transaction has been deleted
