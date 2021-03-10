@@ -16,10 +16,10 @@ setup(
     version="1.0.0",
     author="Andreas Skielboe",
     author_email="andreas@skielboe.com",
-    description=("YNAB importer"),
+    description=("Import bank transactions to YNAB."),
     license="The Unlicense",
     keywords="",
-    url="https://ynab.com",
+    url="",
     packages=find_packages(),
     long_description=read("README.md"),
     classifiers=[
