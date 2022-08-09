@@ -8,7 +8,7 @@ or YNAB and may stop working at any time.
 
 ### Basic configuration
 
-Add your basic configuration by editing ynabi/api/config.py (see ynabi/api/config.example.py).
+Add your basic configuration by editing ynabi/config.py (see ynabi/config.example.py).
 
 ### Configure Spiir
 

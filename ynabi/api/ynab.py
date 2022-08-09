@@ -72,7 +72,7 @@ def create_transactions(transactions, chunk_size=100, dryrun=False):
     n_created = len(transactions) - n_duplicates
 
     log("ynab", f"created {n_created} transactions, {n_duplicates} duplicates ignored")
-    print("ynab: done")
+    print(f"ynab: created {n_created} transactions ({n_duplicates} duplicates ignored)")
 
     return n_created, n_duplicates
 
@@ -112,7 +112,7 @@ def get_account_id(name):
     for account in accounts():
         if name == account["name"]:
             return account["id"]
-
+    raise(TypeError(f"ynab account id not found for account {name}"))
 
 def get_category_id(name):
     for category_group in category_groups():
